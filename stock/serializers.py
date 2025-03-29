@@ -1,19 +1,20 @@
 from rest_framework import serializers
-from .models import Article,StockEntry,StockMouvement
+from .models import Article, StockEntry, StockMovement
 
 class ArticleSerializer(serializers.ModelSerializer):
-    stock_total=serializers.IntegerField(read_only=True)
-    class Meta:
-        model=Article
-        fields='__all__'
+    stock_total = serializers.IntegerField(read_only=True)
 
-class StockentrySerializer(serializers.ModelSerializer):
     class Meta:
-        model=StockEntry
-        fields='__all__'
-        
-class StockMouvementSerializer(serializers.ModelSerializer):
+        model = Article
+        fields = '__all__'
+
+class StockEntrySerializer(serializers.ModelSerializer):
     class Meta:
-        model=StockMouvement
-        fields='__all__'
+        model = StockEntry
+        fields = '__all__'
+
+class StockMovementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StockMovement
+        fields = '__all__'
 

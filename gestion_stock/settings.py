@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg',
+    'rest_framework',
+    'corsheaders',
+    'rest_framework_simplejwt',
+    'stock'
 ]
 
 MIDDLEWARE = [
@@ -75,9 +80,13 @@ WSGI_APPLICATION = 'gestion_stock.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'gestion_stock',        # Nom de la base de données
+        'USER': 'jp',                 # Nom de l'utilisateur PostgreSQL
+        'PASSWORD': '1234', # Mot de passe de l'utilisateur
+        'HOST': 'localhost',                 # Adresse de l'hôte (ou IP)
+        'PORT': '3306',                      # Port par défaut de PostgreSQL
+    },
 }
 
 
@@ -121,3 +130,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS settings
+CORS_ALLOW_CREDENTIALS = True

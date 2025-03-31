@@ -1,12 +1,38 @@
 from django.db import models
 
+class Categorie(models.Model):
+    libele=models.CharField(max_length=100)
+    description=models.TextField(blank=True,null=True)
+
+    def __str__(self):
+        return f"forme {self.libele}"
+class Forme(models.Model):
+    libele=models.CharField(max_length=100)
+    description=models.TextField(blank=True,null=True)
+
+    def __str__(self):
+        return f"forme {self.libele}"
+
+class Couleur(models.Model):
+    libele=models.CharField(max_length=100)
+    description=models.TextField(blank=True,null=True)
+    def __str__(self):
+        return f"couleur {self.libele}"
+
+
+class Type(models.Model):
+    libele=models.CharField(max_length=100)
+    description=models.TextField(blank=True,null=True)
+    def __str__(self):
+        return f"Type  {self.libele}"
+
 class Article(models.Model):
     nom = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
-    categorie = models.CharField(max_length=100)
-    type = models.CharField(max_length=100, blank=True, null=True)
-    forme = models.CharField(max_length=100, blank=True, null=True)
-    couleur = models.CharField(max_length=100, blank=True, null=True)
+    categorie = models.ForeignKey(Categorie,related_name="categorie_article",on_delete=models.CASCADE)
+    type = models.ForeignKey(Type,null=True,on_delete=models.CASCADE)
+    forme = models.ForeignKey(Forme,null=True, on_delete=models.CASCADE,related_name="forme_article")
+    couleur = models.ForeignKey(Couleur,on_delete=models.CASCADE, related_name="couleur_Article")
     prix_achat = models.DecimalField(max_digits=10, decimal_places=2)
     prix_vente = models.DecimalField(max_digits=10, decimal_places=2)
     seuil_reapprovisionnement = models.PositiveIntegerField(default=10)

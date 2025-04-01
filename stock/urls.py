@@ -1,11 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ArticleViewSet, StockEntryViewSet, StockMovementViewSet
+from .views import CategorieViewSet, FormeViewSet, CouleurViewSet, TypeViewSet,ArticleViewSet, StockEntryViewSet, StockMovementViewSet
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 router = DefaultRouter()
+router.register(r'categories', CategorieViewSet)
+router.register(r'formes', FormeViewSet)
+router.register(r'couleurs', CouleurViewSet)
+router.register(r'types', TypeViewSet)
 router.register(r'articles', ArticleViewSet)
 router.register(r'stock-entries', StockEntryViewSet)
 router.register(r'stock-movements', StockMovementViewSet)

@@ -5,8 +5,24 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.utils.timezone import now
-from .models import Article, StockEntry, StockMovement
-from .serializers import ArticleSerializer, StockEntrySerializer, StockMovementSerializer
+from .models import Article, StockEntry, StockMovement,Categorie,Forme,Couleur,Type
+from .serializers import ArticleSerializer, StockEntrySerializer, StockMovementSerializer,CategorieSerializer, FormeSerializer, CouleurSerializer, TypeSerializer
+
+class CategorieViewSet(viewsets.ModelViewSet):
+    queryset = Categorie.objects.all()
+    serializer_class = CategorieSerializer
+
+class FormeViewSet(viewsets.ModelViewSet):
+    queryset = Forme.objects.all()
+    serializer_class = FormeSerializer
+
+class CouleurViewSet(viewsets.ModelViewSet):
+    queryset = Couleur.objects.all()
+    serializer_class = CouleurSerializer
+
+class TypeViewSet(viewsets.ModelViewSet):
+    queryset = Type.objects.all()
+    serializer_class = TypeSerializer
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()

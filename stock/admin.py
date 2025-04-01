@@ -1,5 +1,29 @@
 from django.contrib import admin
-from .models import Article, StockEntry, StockMovement
+from .models import Article, StockEntry, StockMovement,Categorie,Forme,Couleur,Type
+
+@admin.register(Categorie)
+class CategorieAdmin(admin.ModelAdmin):
+    list_display = ('libele', 'description')
+    search_fields = ('libele')
+    list_filter = ('libele')
+
+@admin.register(Forme)
+class FormeAdmin(admin.ModelAdmin):
+    list_display = ('libele', 'description')
+    search_fields = ('libele')
+    list_filter = ('libele')
+
+@admin.register(Couleur)
+class CouleurAdmin(admin.ModelAdmin):
+    list_display = ('libele', 'description')
+    search_fields = ('libele')
+    list_filter = ('libele')
+
+@admin.register(Type)
+class CouleurAdmin(admin.ModelAdmin):
+    list_display = ('libele', 'description')
+    search_fields = ('libele')
+    list_filter = ('libele')
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):

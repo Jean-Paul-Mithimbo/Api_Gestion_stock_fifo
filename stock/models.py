@@ -89,6 +89,13 @@ class Type(models.Model):
 
     def __str__(self):
         return self.libele
+    
+class Unite(models.Model):
+    libele = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.libele
 
 class Article(models.Model):
     nom = models.CharField(max_length=255, unique=True)
@@ -97,9 +104,8 @@ class Article(models.Model):
     type = models.ForeignKey(Type, null=True, on_delete=models.CASCADE)
     forme = models.ForeignKey(Forme, null=True, on_delete=models.CASCADE)
     couleur = models.ForeignKey(Couleur, on_delete=models.CASCADE)
-    prix_achat = models.DecimalField(max_digits=10, decimal_places=2)
-    prix_vente = models.DecimalField(max_digits=10, decimal_places=2)
     seuil_reapprovisionnement = models.PositiveIntegerField(default=10)
+    unite = models.ForeignKey(Unite, null=True, on_delete=models.CASCADE)
 
     def stock_total(self):
         return sum(entry.quantite for entry in self.stock_entries.all())

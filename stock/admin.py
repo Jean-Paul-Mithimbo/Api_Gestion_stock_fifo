@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Article, StockMovement,Categorie,Forme,Couleur,Type
+from .models import *
 
 @admin.register(Categorie)
 class CategorieAdmin(admin.ModelAdmin):
@@ -25,9 +25,15 @@ class CouleurAdmin(admin.ModelAdmin):
     search_fields = ('libele',)
     list_filter = ('libele',)
 
+@admin.register(Unite)
+class UniteAdmin(admin.ModelAdmin):
+    list_display = ('libele', 'description')
+    search_fields = ('libele',)
+    list_filter = ('libele',)
+
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'categorie', 'prix_achat', 'prix_vente', 'stock_total', 'seuil_reapprovisionnement')
+    list_display = ('nom', 'categorie', 'stock_total', 'seuil_reapprovisionnement')
     search_fields = ('nom', 'categorie', 'type', 'forme', 'couleur')
     list_filter = ('categorie', 'type', 'forme', 'couleur')
 

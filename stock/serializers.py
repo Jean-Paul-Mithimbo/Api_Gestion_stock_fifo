@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, StockMovement,Categorie,Forme,Couleur,Type
+from .models import Article, StockMovement,Categorie,Forme,Couleur,Type,Unite
 
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,6 +19,10 @@ class CouleurSerializer(serializers.ModelSerializer):
 class TypeSerializer(serializers.ModelSerializer):
      class Meta:
         model = Type
+        fields = '__all__'
+class UniteSerializer(serializers.ModelSerializer):
+     class Meta:
+        model = Unite
         fields = '__all__'
 
 class ArticleSerializer(serializers.ModelSerializer):

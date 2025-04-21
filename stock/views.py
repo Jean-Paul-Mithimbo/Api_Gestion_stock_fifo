@@ -14,8 +14,8 @@ from django.http import HttpResponse
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
-from .models import Article, StockMovement,Categorie,Forme,Couleur,Type
-from .serializers import ArticleSerializer, StockMovementSerializer,CategorieSerializer, FormeSerializer, CouleurSerializer, TypeSerializer
+from .models import *
+from .serializers import *
 
 class CategorieViewSet(viewsets.ModelViewSet):
     queryset = Categorie.objects.all()
@@ -32,6 +32,10 @@ class CouleurViewSet(viewsets.ModelViewSet):
 class TypeViewSet(viewsets.ModelViewSet):
     queryset = Type.objects.all()
     serializer_class = TypeSerializer
+
+class UniteViewSet(viewsets.ModelViewSet):
+    queryset = Unite.objects.all()
+    serializer_class = UniteSerializer
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all()

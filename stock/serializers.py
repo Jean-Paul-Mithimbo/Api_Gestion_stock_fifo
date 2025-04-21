@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, StockEntry, StockMovement,Categorie,Forme,Couleur,Type
+from .models import Article, StockMovement,Categorie,Forme,Couleur,Type
 
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,10 +28,10 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = '__all__'
 
-class StockEntrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StockEntry
-        fields = '__all__'
+# class StockEntrySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = StockEntry
+#         fields = '__all__'
 
 class StockMovementSerializer(serializers.ModelSerializer):
     class Meta:

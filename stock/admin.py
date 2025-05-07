@@ -33,7 +33,7 @@ class UniteAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('nom', 'categorie', 'stock_total', 'seuil_reapprovisionnement')
+    list_display = ('nom', 'categorie', 'seuil_reapprovisionnement')
     search_fields = ('nom', 'categorie', 'type', 'forme', 'couleur')
     list_filter = ('categorie', 'type', 'forme', 'couleur')
 

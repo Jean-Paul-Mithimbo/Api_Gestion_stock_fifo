@@ -46,8 +46,8 @@ class Article(models.Model):
     seuil_reapprovisionnement = models.PositiveIntegerField(default=10)
     unite = models.ForeignKey(Unite, null=True, on_delete=models.CASCADE)
 
-    def stock_total(self):
-        return sum(entry.quantite for entry in self.stock_entries.all())
+    # def stock_total(self):
+    #     return sum(entry.quantite for entry in self.stock_entries.all())
 
     def __str__(self):
         return f"{self.nom}"

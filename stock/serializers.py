@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article, StockMovement,Categorie,Forme,Couleur,Type,Unite
+from .models import *
 
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,13 +32,38 @@ class ArticleSerializer(serializers.ModelSerializer):
         model = Article
         fields = '__all__'
 
-# class StockEntrySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = StockEntry
-#         fields = '__all__'
 
-class StockMovementSerializer(serializers.ModelSerializer):
+# stock
+class StockSerializer(serializers.ModelSerializer):
+    article = serializers.StringRelatedField()
     class Meta:
-        model = StockMovement
-        fields = '__all__'
+        model  = Stock
+        fields = ['id', 'article', 'quantite', 'seuil_alerte']
+
+class LigneEntreeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = LigneEntree
+        fields = [
+            'id', 'article', 'quantite', 'prix_unitaire',
+            'date_entree', 'date_expiration'
+        ]
+
+class EntreeSerializer(serializers.ModelSerializer):
+    lignes = LigneEntreeSerializer(many=True)
+    class Meta:
+        model  = Entree
+        fields = ['id', 'libele','date_op', 'lignes']
+
+class LigneSortieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = LigneSortie
+        fields = [
+            'id', 'article', 'quantite', 'date_sortie'
+        ]
+
+class SortieSerializer(serializers.ModelSerializer):
+    lignes = LigneSortieSerializer(many=True)
+    class Meta:
+        model  = Sortie
+        fields = ['id', 'motif', 'lignes']
 

@@ -39,10 +39,10 @@ class Unite(models.Model):
 class Article(models.Model):
     nom = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
-    categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE)
-    type = models.ForeignKey(Type, null=True, on_delete=models.CASCADE)
-    forme = models.ForeignKey(Forme, null=True, on_delete=models.CASCADE)
-    couleur = models.ForeignKey(Couleur, on_delete=models.CASCADE)
+    categorie = models.ForeignKey(Categorie,blank=True, null=True, on_delete=models.CASCADE)
+    type = models.ForeignKey(Type, null=True,blank=True, on_delete=models.CASCADE)
+    forme = models.ForeignKey(Forme, null=True,blank=True, on_delete=models.CASCADE)
+    couleur = models.ForeignKey(Couleur,null=True,blank=True,on_delete=models.CASCADE)
     seuil_reapprovisionnement = models.PositiveIntegerField(default=10)
     unite = models.ForeignKey(Unite, null=True, on_delete=models.CASCADE)
 

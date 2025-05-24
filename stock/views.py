@@ -395,7 +395,7 @@ def fiche_stock_article_pdf(request, article_id):
     elements.append(info_table)
     elements.append(Spacer(1, 5*mm))
 
-    # 6️⃣ Charger et fusionner mouvements
+    # 6 Charger et fusionner mouvements
     entrees = LigneEntree.objects.filter(article=article).values(
         'date_entree','quantite','prix_unitaire','entree__libele'
     )
@@ -545,4 +545,245 @@ def fiche_stock_article_pdf(request, article_id):
         buffer,
         content_type='application/pdf',
         headers={'Content-Disposition': f'inline; filename="FICHE_DE_STOCK_{article.pk}.pdf"'}
+    )
+
+# facture de sortie
+def facture_sortie_pdf(request, sortie_id):
+    """
+    Génère un PDF de facture pour une sortie.
+    """
+    sortie = get_object_or_404(Sortie, pk=sortie_id)
+    lignes = LigneSortie.objects.filter(sortie=sortie).select_related('article')
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=15*mm,
+        rightMargin=15*mm,
+        topMargin=20*mm,
+        bottomMargin=20*mm,
+    )
+
+    styles = getSampleStyleSheet()
+    normal = styles['Normal']
+    title_style = ParagraphStyle(
+        'Title',
+        parent=styles['Heading2'],
+        alignment=1,
+        fontSize=14,
+        spaceAfter=4*mm
+    )
+
+    elements = []
+    elements.append(Paragraph("UNIVERSITÉ ADVENTISTE DE LUKANGA", styles['Title']))
+    elements.append(Paragraph("B.P 180 BUTEMBO", styles['Title']))
+    elements.append(Spacer(1, 3*mm))
+    elements.append(Paragraph("<b>FACTURE DE SORTIE</b>", title_style))
+    elements.append(Spacer(1, 2*mm))
+    elements.append(Paragraph(f"Numéro de sortie : <b>{sortie.pk}</b>", normal))
+    elements.append(Paragraph(f"Motif : <b>{sortie.motif}</b>", normal))
+    elements.append(Spacer(1, 5*mm))
+
+    table_data = [
+        ["#", "Article", "Quantité", "Date de sortie"]
+    ]
+    for idx, ligne in enumerate(lignes, 1):
+        table_data.append([
+            str(idx),
+            ligne.article.nom,
+            str(ligne.quantite),
+            ligne.date_sortie.strftime('%d/%m/%Y %H:%M')
+        ])
+
+    table = Table(table_data, hAlign='LEFT')
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('ALIGN', (2,1), (2,-1), 'RIGHT'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 10*mm))
+    elements.append(Paragraph("Signature : ____________________", normal))
+
+    doc.build(elements)
+    buffer.seek(0)
+    return HttpResponse(
+        buffer,
+        content_type='application/pdf',
+        headers={'Content-Disposition': f'inline; filename="FACTURE_SORTIE_{sortie.pk}.pdf"'}
+    )
+
+# bon d'entree
+def bon_entree_pdf(request, entree_id):
+    """
+    Génère un PDF de bon d'entrée pour une entrée,
+    avec unité, prix unitaire, prix total et total général.
+    """
+    entree = get_object_or_404(Entree, pk=entree_id)
+    lignes = LigneEntree.objects.filter(entree=entree).select_related('article', 'article__unite')
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=15*mm,
+        rightMargin=15*mm,
+        topMargin=20*mm,
+        bottomMargin=20*mm,
+    )
+
+    styles = getSampleStyleSheet()
+    normal = styles['Normal']
+    normal.wordWrap = 'CJK'
+    title_style = ParagraphStyle(
+        'Title',
+        parent=styles['Heading2'],
+        alignment=1,
+        fontSize=14,
+        spaceAfter=4*mm
+    )
+
+    elements = []
+    elements.append(Paragraph("UNIVERSITÉ ADVENTISTE DE LUKANGA", styles['Title']))
+    elements.append(Paragraph("B.P 180 BUTEMBO", styles['Title']))
+    elements.append(Spacer(1, 3*mm))
+    elements.append(Paragraph("<b>BON D'ENTRÉE</b>", title_style))
+    elements.append(Spacer(1, 2*mm))
+    elements.append(Paragraph(f"Numéro d'entrée : <b>{entree.pk}</b>", normal))
+    elements.append(Paragraph(f"Libellé : <b>{entree.libele}</b>", normal))
+    elements.append(Paragraph(f"Date : <b>{entree.date_op.strftime('%d/%m/%Y')}</b>", normal))
+    elements.append(Spacer(1, 5*mm))
+
+    table_data = [
+        ["#", "Article", "Unité", "Quantité", "Prix Unitaire", "Prix Total", "Date Expiration", ]
+    ]
+    total_general = 0
+    for idx, ligne in enumerate(lignes, 1):
+        prix_total = (ligne.quantite or 0) * (ligne.prix_unitaire or 0)
+        total_general += prix_total
+        table_data.append([
+            str(idx),
+            ligne.article.nom,
+            ligne.article.unite.libele if ligne.article.unite else "",
+            str(ligne.quantite),
+            f"{ligne.prix_unitaire:.2f}" if ligne.prix_unitaire is not None else "",
+            f"{prix_total:.2f}",
+            ligne.date_expiration.strftime('%d/%m/%Y') if ligne.date_expiration else "",
+            # ligne.date_entree.strftime('%d/%m/%Y %H:%M') if ligne.date_entree else "",
+        ])
+
+    # Ligne du total général
+    table_data.append([
+        "Total", "", "", "", "", f"{total_general:.2f}", "", 
+    ])
+
+    col_widths = [18*mm, 40*mm, 18*mm, 18*mm, 25*mm, 25*mm, 28*mm, 32*mm]
+    table = Table(table_data, colWidths=col_widths, hAlign='LEFT', repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('ALIGN', (3,1), (5,-2), 'RIGHT'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('WORDWRAP', (0,0), (-1,-1), 'CJK'),
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('FONTNAME', (4,-1), (5,-1), 'Helvetica-Bold'),
+        ('BACKGROUND', (4,-1), (5,-1), colors.whitesmoke),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 10*mm))
+    elements.append(Paragraph("Signature : ____________________", normal))
+
+    doc.build(elements)
+    buffer.seek(0)
+    return HttpResponse(
+        buffer,
+        content_type='application/pdf',
+        headers={'Content-Disposition': f'inline; filename="BON_ENTREE_{entree.pk}.pdf"'}
+    )
+
+# inventaire
+def fiche_inventaire_pdf(request):
+    """
+    Génère un PDF de la fiche d'inventaire de tous les articles.
+    """
+    articles = Article.objects.select_related('unite', 'stock').all()
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        leftMargin=10*mm,
+        rightMargin=10*mm,
+        topMargin=20*mm,
+        bottomMargin=20*mm,
+    )
+
+    styles = getSampleStyleSheet()
+    normal = styles['Normal']
+    normal.wordWrap = 'CJK'
+    title_style = ParagraphStyle(
+        'Title',
+        parent=styles['Heading2'],
+        alignment=1,
+        fontSize=14,
+        spaceAfter=4*mm
+    )
+
+    elements = []
+    elements.append(Paragraph("UNIVERSITÉ ADVENTISTE DE LUKANGA", styles['Title']))
+    elements.append(Paragraph("B.P 180 BUTEMBO", styles['Title']))
+    elements.append(Spacer(1, 3*mm))
+    elements.append(Paragraph("<b>FICHE D'INVENTAIRE</b>", title_style))
+    elements.append(Spacer(1, 2*mm))
+    elements.append(Paragraph(f"Date : <b>{datetime.now().strftime('%d/%m/%Y')}</b>", normal))
+    elements.append(Spacer(1, 5*mm))
+
+    table_data = [
+        ["#", "Article", "Unité", "Quantité", "Valeur Unitaire", "Valeur Totale"]
+    ]
+    total_general = 0
+    for idx, art in enumerate(articles, 1):
+        quantite = art.stock.quantite if hasattr(art, 'stock') else 0
+        valeur_unitaire = getattr(art, 'prix_achat', 0) or 0
+        valeur_totale = quantite * valeur_unitaire
+        total_general += valeur_totale
+        table_data.append([
+            str(idx),
+            art.nom,
+            art.unite.libele if art.unite else "",
+            str(quantite),
+            f"{valeur_unitaire:.2f}",
+            f"{valeur_totale:.2f}"
+        ])
+    table_data.append([
+        "", "", "", "", "<b>Total général</b>", f"<b>{total_general:.2f}</b>"
+    ])
+
+    col_widths = [18*mm, 50*mm, 20*mm, 20*mm, 28*mm, 32*mm]
+    table = Table(table_data, colWidths=col_widths, hAlign='LEFT', repeatRows=1)
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('ALIGN', (3,1), (-1,-1), 'RIGHT'),
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('WORDWRAP', (0,0), (-1,-1), 'CJK'),
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+        ('FONTNAME', (4,-1), (5,-1), 'Helvetica-Bold'),
+        ('BACKGROUND', (4,-1), (5,-1), colors.whitesmoke),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 10*mm))
+    elements.append(Paragraph("Signature : ____________________", normal))
+
+    doc.build(elements)
+    buffer.seek(0)
+    return HttpResponse(
+        buffer,
+        content_type='application/pdf',
+        headers={'Content-Disposition': 'inline; filename="FICHE_INVENTAIRE.pdf"'}
     )

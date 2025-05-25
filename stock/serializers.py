@@ -65,5 +65,5 @@ class SortieSerializer(serializers.ModelSerializer):
     lignes = LigneSortieSerializer(many=True)
     class Meta:
         model  = Sortie
-        fields = ['id', 'motif', 'lignes']
+        fields = ['id', 'motif','date_sor', 'lignes']
 

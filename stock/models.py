@@ -82,6 +82,7 @@ class LigneEntree(models.Model):
 
 class Sortie(models.Model):
     motif = models.CharField(max_length=255, blank=True)
+    date_sor = models.DateField()
 
     def __str__(self):
         return f"Sortie #{self.pk}"

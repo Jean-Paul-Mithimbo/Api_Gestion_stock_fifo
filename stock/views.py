@@ -730,7 +730,7 @@ def bon_sortie_pdf(request, sortie_id):
         'Title',
         parent=styles['Heading2'],
         alignment=1,
-        fontSize=14,
+        fontSize=11,
         spaceAfter=4*mm
     )
 
@@ -741,6 +741,7 @@ def bon_sortie_pdf(request, sortie_id):
     elements.append(Paragraph("<b>BON DE SORTIE</b>", title_style))
     elements.append(Spacer(1, 2*mm))
     elements.append(Paragraph(f"Numéro de sortie : <b>{sortie.pk}</b>", normal))
+    elements.append(Paragraph(f"Date de la sortie : <b>{sortie.date_sor}</b>", normal))
     elements.append(Paragraph(f"Motif : <b>{sortie.motif}</b>", normal))
     elements.append(Spacer(1, 5*mm))
 
